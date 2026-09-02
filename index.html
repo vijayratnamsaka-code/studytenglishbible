@@ -3,482 +3,567 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Tenglish Bible</title>
+  <title>Telugu Bible Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg: #f4f0f8;
-      --header-bg: #eae3f1;
+      --bg: #f8fafc;
       --surface: #ffffff;
-      --border: #ded7e8;
-      --text: #1d1b20;
-      --text-sub: #6c6775;
-      --selected: #d8cde9;
-      --active-text: #21005d;
-      --accent: #6750a4;
+      --surface-border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --verse-num: #3b82f6;
+      --header-bg: rgba(255, 255, 255, 0.85);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
     }
 
     [data-theme="dark"] {
-      --bg: #141218;
-      --header-bg: #1d192b;
-      --surface: #211f26;
-      --border: #2d2938;
-      --text: #e6e0e9;
-      --text-sub: #958da5;
-      --selected: #4a4458;
-      --active-text: #e8def8;
-      --accent: #d0bcff;
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-border: #1f2937;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.1);
+      --verse-num: #38bdf8;
+      --header-bg: rgba(17, 24, 39, 0.85);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
 
-    /* Top Bar */
+    /* Sticky Glassmorphism Header */
     header {
-      background: var(--header-bg);
-      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background-color: var(--header-bg);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 12px 16px;
+    }
+
+    .nav-container {
+      max-width: 800px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
     }
 
-    .logo {
-      font-size: 1.4rem;
+    .brand-title {
+      font-size: 1.15rem;
       font-weight: 700;
-      letter-spacing: -0.3px;
-    }
-
-    .top-icons {
+      letter-spacing: -0.02em;
+      color: var(--text-main);
       display: flex;
-      gap: 16px;
-      font-size: 18px;
+      align-items: center;
+      gap: 6px;
     }
 
-    .icon-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-      color: var(--text);
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    /* 3 Column Table Layout */
-    .table-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-    }
-
-    .table-header {
-      display: flex;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--border);
+      cursor: pointer;
       font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      text-align: center;
-    }
-
-    .th-book { flex: 5; text-align: center; padding: 12px 16px; }
-    .th-ch { flex: 2; border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 12px 6px; }
-    .th-ver { flex: 2; padding: 12px 6px; }
-
-    .table-body {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* Columns Scroll */
-    .col-book, .col-ch, .col-ver {
-      height: 100%;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .col-book {
-      flex: 5;
-    }
-
-    .col-ch {
-      flex: 2;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      text-align: center;
-    }
-
-    .col-ver {
-      flex: 2;
-      text-align: center;
-    }
-
-    /* Item Styles */
-    .book-item {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .book-item.selected {
-      background-color: var(--selected);
-    }
-
-    .book-tenglish {
-      font-size: 16px;
       font-weight: 600;
-      color: var(--text);
-      line-height: 1.2;
+      transition: all 0.15s ease;
     }
 
-    .book-telugu {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-top: 4px;
+    .btn-icon:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
-    .num-item {
-      padding: 15px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 16px;
-      font-weight: 500;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .num-item.selected {
-      background-color: var(--selected);
-      color: var(--active-text);
-      font-weight: 700;
-    }
-
-    /* Reader Fullscreen Modal */
-    .reader-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 800px;
       width: 100%;
-      height: 100%;
-      background: var(--surface);
-      display: none;
-      flex-direction: column;
-      z-index: 100;
-    }
-
-    .reader-modal.active {
+      margin: 0 auto;
+      padding: 16px;
       display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .modal-header {
-      background: var(--header-bg);
-      padding: 14px 16px;
+    /* Controls Bar */
+    .controls-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .select-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    select, input[type="text"] {
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    select {
+      flex: 1;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    select:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .search-row input {
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    /* Content Area */
+    .reader-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      min-height: 450px;
+    }
+
+    .reader-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
     }
 
-    .modal-title {
-      font-size: 1.1rem;
+    .reader-title {
+      font-size: 1.3rem;
       font-weight: 700;
+      color: var(--text-main);
     }
 
-    .close-btn {
+    .chapter-nav-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .verse-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .verse-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      line-height: 1.75;
+      font-size: 17px;
+      position: relative;
+      border-radius: 8px;
+      padding: 4px;
+      transition: background-color 0.15s ease;
+    }
+
+    .verse-box:hover {
+      background-color: var(--accent-soft);
+    }
+
+    .verse-num {
+      color: var(--verse-num);
+      font-weight: 700;
+      font-size: 0.85em;
+      min-width: 24px;
+      padding-top: 2px;
+      user-select: none;
+    }
+
+    .verse-text {
+      flex: 1;
+      color: var(--text-main);
+    }
+
+    .copy-btn {
+      opacity: 0;
       background: none;
       border: none;
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--text);
+      color: var(--text-muted);
       cursor: pointer;
-    }
-
-    .modal-content {
-      flex: 1;
-      padding: 20px 16px;
-      overflow-y: auto;
-      line-height: 1.8;
-      font-size: 17px;
-    }
-
-    .verse-line {
-      margin-bottom: 12px;
       padding: 4px;
       border-radius: 4px;
+      transition: all 0.2s ease;
+      font-size: 13px;
     }
 
-    .verse-line.highlight {
-      background: var(--selected);
+    .verse-box:hover .copy-btn {
+      opacity: 1;
     }
 
-    .v-num {
-      color: var(--accent);
-      font-weight: 700;
-      margin-right: 6px;
-      font-size: 14px;
+    @media (hover: none) {
+      .copy-btn {
+        opacity: 0.6;
+      }
+    }
+
+    .state-msg {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 60px 10px;
+      font-size: 15px;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--text-main);
+      color: var(--bg);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="logo">Tenglish Bible</div>
-    <div class="top-icons">
-      <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
-      <button class="icon-btn" onclick="alert('Tenglish Bible Reader with Chapter & Verse Picker')" title="Info">ⓘ</button>
+    <div class="nav-container">
+      <div class="brand-title">
+        <span>📖</span> Telugu Bible
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="fontDec" title="Decrease font size">A-</button>
+        <button class="btn-icon" id="fontInc" title="Increase font size">A+</button>
+        <button class="btn-icon" id="themeToggle" title="Dark/Light Mode">🌙</button>
+      </div>
     </div>
   </header>
 
-  <div class="table-container">
-    <div class="table-header">
-      <div class="th-book">Book</div>
-      <div class="th-ch">Ch.</div>
-      <div class="th-ver">Ver.</div>
+  <main>
+    <div class="controls-card">
+      <div class="select-row">
+        <select id="bookSelect">
+          <option value="">Grandhamu ఎంచుకోండి</option>
+        </select>
+        <select id="chapterSelect" disabled>
+          <option value="">Adhyayam</option>
+        </select>
+      </div>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Vachanamulu / padalu vethakandi..." />
+        <button class="btn-primary" id="searchBtn">Search</button>
+      </div>
     </div>
-    
-    <div class="table-body">
-      <!-- 1. Books List -->
-      <div class="col-book" id="bookList"></div>
 
-      <!-- 2. Chapters List -->
-      <div class="col-ch" id="chList"></div>
-
-      <!-- 3. Verses List -->
-      <div class="col-ver" id="verList"></div>
+    <div class="reader-card">
+      <div class="reader-header" id="readerHeader" style="display: none;">
+        <h2 class="reader-title" id="chapterTitle"></h2>
+        <div class="chapter-nav-btns">
+          <button class="btn-icon" id="prevChapter" title="Previous Chapter">‹</button>
+          <button class="btn-icon" id="nextChapter" title="Next Chapter">›</button>
+        </div>
+      </div>
+      <div id="contentArea">
+        <p class="state-msg">Data load avthundi, dayachesi vechi undandi...</p>
+      </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Fullscreen Chapter Reader -->
-  <div class="reader-modal" id="readerModal">
-    <div class="modal-header">
-      <button class="close-btn" id="closeReader">✕</button>
-      <div class="modal-title" id="modalTitle">Genesis 1</div>
-      <div style="width:24px;"></div>
-    </div>
-    <div class="modal-content" id="modalContent"></div>
-  </div>
+  <div id="toast">Copied to clipboard!</div>
 
   <script>
-    // 66 Grandhamula perlu (Tenglish + Telugu Lipi)
-    const bibleBooks = [
-      { t: "Adikaandamu", te: "ఆదికాండము" },
-      { t: "Nirgamakaandamu", te: "నిర్గమకాండము" },
-      { t: "Leveyakaandamu", te: "లేవీయకాండము" },
-      { t: "Sankhyakaandamu", te: "సంఖ్యాకాండము" },
-      { t: "Dviteeyopadesha", te: "ద్వితీయోపదేశకాండము" },
-      { t: "Yehoshuva", te: "యెహోషువ" },
-      { t: "Nyayadhipathulu", te: "న్యాయాధిపతులు" },
-      { t: "Ruthu", te: "రూతు" },
-      { t: "1 Samuyelu", te: "1 సమూయేలు" },
-      { t: "2 Samuyelu", te: "2 సమూయేలు" },
-      { t: "1 Raajulu", te: "1 రాజులు" },
-      { t: "2 Raajulu", te: "2 రాజులు" },
-      { t: "1 Dinaruttantamulu", te: "1 దినవృత్తాంతములు" },
-      { t: "2 Dinaruttantamulu", te: "2 దినవృత్తాంతములు" },
-      { t: "Ezra", te: "ఎజ్రా" },
-      { t: "Nehemya", te: "నెహెమ్యా" },
-      { t: "Esteru", te: "ఎస్తేరు" },
-      { t: "Yobu", te: "యోబు" },
-      { t: "Keertanalu", te: "కీర్తనలు" },
-      { t: "Saamethalu", te: "సామెతలు" },
-      { t: "Prasangi", te: "ప్రసంగి" },
-      { t: "Parama Geetamulu", te: "పరమగీతము" },
-      { t: "Yeshayya", te: "యెషయా" },
-      { t: "Yermiya", te: "యిర్మియా" },
-      { t: "Vilapavaakyamulu", te: "విలాపవాక్యములు" },
-      { t: "Yehejkelu", te: "యెహెజ్కేలు" },
-      { t: "Daniyelu", te: "దానియేలు" },
-      { t: "Hoseya", te: "హోషేయ" },
-      { t: "Yovelu", te: "యోవేలు" },
-      { t: "Aamosu", te: "ఆమోసు" },
-      { t: "Obadya", te: "ఓబద్యా" },
-      { t: "Yona", te: "యోనా" },
-      { t: "Meekha", te: "మీకా" },
-      { t: "Nahooshu", te: "నహోము" },
-      { t: "Habakkuku", te: "హబక్కూకు" },
-      { t: "Zefanya", te: "జెఫన్యా" },
-      { t: "Haggayi", te: "హగ్గయి" },
-      { t: "Zekarya", te: "జెకర్యా" },
-      { t: "Malakee", te: "మలాకీ" },
-      { t: "Mattheyu", te: "మత్తయి" },
-      { t: "Maarku", te: "మార్కు" },
-      { t: "Luka", te: "లూకా" },
-      { t: "Yohanu", te: "యోహాను" },
-      { t: "Aposthula Kaaryamulu", te: "అపొస్తలుల కార్యములు" },
-      { t: "Romiyulaku", te: "రోమీయులకు" },
-      { t: "1 Korintheelaku", te: "1 కొరింథీయులకు" },
-      { t: "2 Korintheelaku", te: "2 కొరింథీయులకు" },
-      { t: "Galateeyulaku", te: "గలతీయులకు" },
-      { t: "Epheseeyulaku", te: "ఎఫెసీయులకు" },
-      { t: "Philippeelaku", te: "ఫిలిప్పీయులకు" },
-      { t: "Kolosseeyulaku", te: "కొలొస్సయులకు" },
-      { t: "1 Thessalonikeeyulaku", te: "1 థెస్సలొనీకయులకు" },
-      { t: "2 Thessalonikeeyulaku", te: "2 థెస్సలొనీకయులకు" },
-      { t: "1 Timotheyiki", te: "1 తిమోతికి" },
-      { t: "2 Timotheyiki", te: "2 తిమోతికి" },
-      { t: "Teethuku", te: "తీతుకు" },
-      { t: "Philemonuku", te: "ఫిలేమోనుకు" },
-      { t: "Hebreelaku", te: "హెబ్రీయులకు" },
-      { t: "Yaakobu", te: "యాకోబు" },
-      { t: "1 Pethuru", te: "1 పేతురు" },
-      { t: "2 Pethuru", te: "2 పేతురు" },
-      { t: "1 Yohanu", te: "1 యోహాను" },
-      { t: "2 Yohanu", te: "2 యోహాను" },
-      { t: "3 Yohanu", te: "3 యోహాను" },
-      { t: "Yooda", te: "యూదా" },
-      { t: "Prakatanagrandhamu", te: "ప్రకటన గ్రంథము" }
+    const bookNames = [
+      "Aadhikaandamu", "Nirgamakaandamu", "Leviyakaandamu", "Sankhyaakaandamu", "Dviteeyopadeshamu",
+      "Yohoshuva", "Nyaayaadhipatulu", "Rutu", "1 Shamuyelu", "2 Shamuyelu",
+      "1 Raajulu", "2 Raajulu", "1 Dinaruttantamulu", "2 Dinaruttantamulu", "Ezra",
+      "Nehemya", "Esteru", "Yobu", "Keertanalu", "Saamethalu",
+      "Prasangi", "Parama Geetamulu", "Yeshayya", "Yermiya", "Vilapavaakyamulu",
+      "Yehejkelu", "Daniyelu", "Hoseya", "Yovelu", "Aamosu",
+      "Obadya", "Yona", "Meekha", "Nahooshu", "Habakkuku",
+      "Zefanya", "Haggayi", "Zekarya", "Malakee", "Mattheyu",
+      "Maarku", "Luka", "Yohanu", "Aposthula Kaaryamulu", "Romiyulaku",
+      "1 Korintheelaku", "2 Korintheelaku", "Galateeyulaku", "Epheseeyulaku", "Philippeelaku",
+      "Kolosseeyulaku", "1 Thessalonikeeyulaku", "2 Thessalonikeeyulaku", "1 Timotheyiki", "2 Timotheyiki",
+      "Teethuku", "Philemonuku", "Hebreelaku", "Yaakobu", "1 Pethuru",
+      "2 Pethuru", "1 Yohanu", "2 Yohanu", "3 Yohanu", "Yooda", "Prakatanagrandhamu"
     ];
 
     let bibleData = [];
-    let selectedBook = 1;
-    let selectedChapter = 1;
+    let currentFontSize = 17;
 
-    const bookList = document.getElementById('bookList');
-    const chList = document.getElementById('chList');
-    const verList = document.getElementById('verList');
-    const readerModal = document.getElementById('readerModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalContent = document.getElementById('modalContent');
-    const closeReader = document.getElementById('closeReader');
-    const themeBtn = document.getElementById('themeBtn');
+    const bookSelect = document.getElementById('bookSelect');
+    const chapterSelect = document.getElementById('chapterSelect');
+    const contentArea = document.getElementById('contentArea');
+    const readerHeader = document.getElementById('readerHeader');
+    const chapterTitle = document.getElementById('chapterTitle');
+    const prevChapterBtn = document.getElementById('prevChapter');
+    const nextChapterBtn = document.getElementById('nextChapter');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const themeToggle = document.getElementById('themeToggle');
+    const toast = document.getElementById('toast');
 
-    // Theme toggle
-    themeBtn.addEventListener('click', () => {
+    // Theme Switcher
+    themeToggle.addEventListener('click', () => {
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      themeBtn.textContent = isDark ? '🌙' : '☀️';
+      themeToggle.textContent = isDark ? '🌙' : '☀️';
     });
 
-    // Load JSON Data
+    // Font Scaling
+    document.getElementById('fontInc').addEventListener('click', () => {
+      if (currentFontSize < 25) {
+        currentFontSize += 1.5;
+        updateFontSize();
+      }
+    });
+    document.getElementById('fontDec').addEventListener('click', () => {
+      if (currentFontSize > 14) {
+        currentFontSize -= 1.5;
+        updateFontSize();
+      }
+    });
+
+    function updateFontSize() {
+      document.querySelectorAll('.verse-box').forEach(el => {
+        el.style.fontSize = `${currentFontSize}px`;
+      });
+    }
+
+    // Load Data
     fetch('tenglish_bible.json')
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error("Load failed");
+        return res.json();
+      })
       .then(data => {
         bibleData = data;
-        renderBooks();
-        selectBook(1);
+        populateBooks();
+        // Modati pusthakam, modati chapter default ga load cheyandi
+        bookSelect.value = "1";
+        updateChapters(1);
+        chapterSelect.value = "1";
+        loadChapter(1, 1);
       })
       .catch(err => {
-        alert("JSON load error: tenglish_bible.json file repository lo unda?");
+        contentArea.innerHTML = `<p class="state-msg" style="color:#ef4444;"><code>tenglish_bible.json</code> file load kaaledu. File repo lo undi ani confirm cheskondi.</p>`;
       });
 
-    // Render 1st Column (Books)
-    function renderBooks() {
-      const presentBookNumbers = [...new Set(bibleData.map(i => i.book_number))].sort((a,b)=>a-b);
-      bookList.innerHTML = '';
-
-      presentBookNumbers.forEach(num => {
-        const item = bibleBooks[num - 1] || { t: `Book ${num}`, te: "" };
-        const div = document.createElement('div');
-        div.className = `book-item ${num === selectedBook ? 'selected' : ''}`;
-        div.id = `book-${num}`;
-        div.innerHTML = `
-          <div class="book-tenglish">${item.t}</div>
-          <div class="book-telugu">${item.te}</div>
-        `;
-        div.onclick = () => selectBook(num);
-        bookList.appendChild(div);
+    function populateBooks() {
+      const availableBooks = [...new Set(bibleData.map(item => item.book_number))].sort((a, b) => a - b);
+      bookSelect.innerHTML = '<option value="">Grandhamu ఎంచుకోండి</option>';
+      availableBooks.forEach(num => {
+        const opt = document.createElement('option');
+        opt.value = num;
+        opt.textContent = `${num}. ${bookNames[num - 1] || 'Book ' + num}`;
+        bookSelect.appendChild(opt);
       });
     }
 
-    // Select Book
-    function selectBook(num) {
-      selectedBook = num;
-      document.querySelectorAll('.book-item').forEach(el => el.classList.remove('selected'));
-      const cur = document.getElementById(`book-${num}`);
-      if (cur) cur.classList.add('selected');
+    function updateChapters(bookNum) {
+      chapterSelect.innerHTML = '<option value="">Adhyayam</option>';
+      if (!bookNum) {
+        chapterSelect.disabled = true;
+        return;
+      }
 
       const chapters = [...new Set(
-        bibleData.filter(i => i.book_number === selectedBook).map(i => i.chapter_number)
-      )].sort((a,b)=>a-b);
+        bibleData.filter(item => item.book_number === bookNum).map(item => item.chapter_number)
+      )].sort((a, b) => a - b);
 
-      renderChapters(chapters);
-      selectChapter(chapters[0] || 1);
-    }
-
-    // Render 2nd Column (Chapters)
-    function renderChapters(chapters) {
-      chList.innerHTML = '';
-      chapters.forEach(ch => {
-        const div = document.createElement('div');
-        div.className = `num-item ${ch === selectedChapter ? 'selected' : ''}`;
-        div.id = `ch-${ch}`;
-        div.textContent = ch;
-        div.onclick = () => selectChapter(ch);
-        chList.appendChild(div);
+      chapters.forEach(chap => {
+        const opt = document.createElement('option');
+        opt.value = chap;
+        opt.textContent = `Chapter ${chap}`;
+        chapterSelect.appendChild(opt);
       });
+
+      chapterSelect.disabled = false;
     }
 
-    // Select Chapter
-    function selectChapter(ch) {
-      selectedChapter = ch;
-      document.querySelectorAll('.col-ch .num-item').forEach(el => el.classList.remove('selected'));
-      const cur = document.getElementById(`ch-${ch}`);
-      if (cur) cur.classList.add('selected');
-
-      const count = bibleData.filter(i => i.book_number === selectedBook && i.chapter_number === selectedChapter).length;
-      renderVerses(count);
-    }
-
-    // Render 3rd Column (Verses)
-    function renderVerses(count) {
-      verList.innerHTML = '';
-      for (let v = 1; v <= count; v++) {
-        const div = document.createElement('div');
-        div.className = 'num-item';
-        div.textContent = v;
-        div.onclick = () => openVerseReader(v);
-        verList.appendChild(div);
+    bookSelect.addEventListener('change', () => {
+      const book = parseInt(bookSelect.value);
+      updateChapters(book);
+      if (book) {
+        chapterSelect.value = "1";
+        loadChapter(book, 1);
       }
-    }
+    });
 
-    // Open Reader Modal
-    function openVerseReader(targetVerse) {
-      const verses = bibleData.filter(i => i.book_number === selectedBook && i.chapter_number === selectedChapter);
-      const bInfo = bibleBooks[selectedBook - 1] || { t: `Book ${selectedBook}` };
+    chapterSelect.addEventListener('change', () => {
+      const book = parseInt(bookSelect.value);
+      const chapter = parseInt(chapterSelect.value);
+      if (book && chapter) loadChapter(book, chapter);
+    });
 
-      modalTitle.textContent = `${bInfo.t} ${selectedChapter}`;
-      
-      let html = '';
-      verses.forEach((v, idx) => {
-        const vNum = idx + 1;
-        const isHighlight = vNum === targetVerse ? 'highlight' : '';
+    function loadChapter(book, chapter) {
+      const verses = bibleData.filter(item => item.book_number === book && item.chapter_number === chapter);
+      const bName = bookNames[book - 1] || `Book ${book}`;
+
+      readerHeader.style.display = 'flex';
+      chapterTitle.textContent = `${bName} ${chapter}`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (verses.length === 0) {
+        contentArea.innerHTML = `<p class="state-msg">Vachanamulu leavu.</p>`;
+        return;
+      }
+
+      let html = '<div class="verse-list">';
+      verses.forEach((v, index) => {
+        const vNum = index + 1;
         html += `
-          <div class="verse-line ${isHighlight}" id="v-${vNum}">
-            <span class="v-num">${vNum}</span>
-            <span>${v.text}</span>
+          <div class="verse-box" style="font-size: ${currentFontSize}px">
+            <span class="verse-num">${vNum}</span>
+            <span class="verse-text">${v.text}</span>
+            <button class="copy-btn" onclick="copyVerse('${bName} ${chapter}:${vNum} - ${v.text.replace(/'/g, "\\'")}')" title="Copy">📋</button>
           </div>
         `;
       });
+      html += '</div>';
 
-      modalContent.innerHTML = html;
-      readerModal.classList.add('active');
-
-      setTimeout(() => {
-        const el = document.getElementById(`v-${targetVerse}`);
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+      contentArea.innerHTML = html;
     }
 
-    closeReader.onclick = () => {
-      readerModal.classList.remove('active');
+    // Previous / Next Chapter Buttons
+    prevChapterBtn.addEventListener('click', () => {
+      let book = parseInt(bookSelect.value);
+      let chap = parseInt(chapterSelect.value);
+      if (chap > 1) {
+        chapterSelect.value = chap - 1;
+        loadChapter(book, chap - 1);
+      }
+    });
+
+    nextChapterBtn.addEventListener('click', () => {
+      let book = parseInt(bookSelect.value);
+      let chap = parseInt(chapterSelect.value);
+      const maxChap = chapterSelect.options.length - 1;
+      if (chap < maxChap) {
+        chapterSelect.value = chap + 1;
+        loadChapter(book, chap + 1);
+      }
+    });
+
+    // Copy Toast Functionality
+    window.copyVerse = function(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      });
     };
+
+    // Search Engine
+    searchBtn.addEventListener('click', runSearch);
+    searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') runSearch(); });
+
+    function runSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      const results = bibleData.filter(item => item.text && item.text.toLowerCase().includes(query));
+      readerHeader.style.display = 'none';
+
+      if (results.length === 0) {
+        contentArea.innerHTML = `<p class="state-msg">"${query}" ane padam ekkada dorakaledu.</p>`;
+        return;
+      }
+
+      let html = `<h3 style="margin-bottom:16px; font-size:16px; color:var(--text-muted);">${results.length} vachanamulu dorikaayi:</h3><div class="verse-list">`;
+      results.slice(0, 100).forEach(v => {
+        const bName = bookNames[v.book_number - 1] || `Book ${v.book_number}`;
+        html += `
+          <div class="verse-box" style="flex-direction: column; gap: 4px; padding: 10px; border-bottom: 1px solid var(--surface-border);">
+            <div style="font-size: 13px; font-weight:700; color: var(--accent);">${bName} ${v.chapter_number}</div>
+            <div class="verse-text" style="font-size:${currentFontSize}px">${v.text}</div>
+          </div>
+        `;
+      });
+      html += '</div>';
+
+      contentArea.innerHTML = html;
+    }
   </script>
 </body>
 </html>
