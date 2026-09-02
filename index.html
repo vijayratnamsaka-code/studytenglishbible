@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telugu Bible Reader (Tenglish)</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #3498db;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+    header { background-color: var(--primary-color); color: white; padding: 1.2rem; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
+    .control-panel {
+      background: var(--card-bg); padding: 1.2rem; border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+      display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;
+    }
+    .selectors { display: flex; gap: 10px; flex-wrap: wrap; }
+    select, input, button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; outline: none; }
+    select:focus, input:focus { border-color: var(--accent-color); }
+    button { background-color: var(--accent-color); color: white; border: none; cursor: pointer; font-weight: bold; }
+    button:hover { background-color: #2980b9; }
+    .search-box { display: flex; gap: 8px; width: 100%; max-width: 320px; }
+    .search-box input { flex: 1; }
+    .verse-container { background: var(--card-bg); padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-height: 400px; }
+    .verse-item { margin-bottom: 12px; font-size: 16px; }
+    .verse-number { font-weight: bold; color: var(--accent-color); margin-right: 8px; }
+    .status-msg { text-align: center; color: #777; font-style: italic; padding: 30px; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Telugu Bible Reader</h1>
+    <p>Tenglish Translation</p>
+  </header>
+
+  <div class="container">
+    <div class="control-panel">
+      <div class="selectors">
+        <select id="bookSelect"><option value="">Select Book</option></select>
+        <select id="chapterSelect" disabled><option value="">Select Chapter</option></select>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search verse..." />
+        <button id="searchBtn">Search</button>
+      </div>
+    </div>
+
+    <div class="verse-container" id="contentArea">
+      <p class="status-msg">Bible data load avthundi, dayachesi vechi undandi...</p>
+    </div>
+  </div>
+
+  <script>
+    const bookNames = [
+      "Aadhikaandamu", "Nirgamakaandamu", "Leviyakaandamu", "Sankhyaakaandamu", "Dviteeyopadeshamu",
+      "Yohoshuva", "Nyaayaadhipatulu", "Rutu", "1 Shamuyelu", "2 Shamuyelu",
+      "1 Raajulu", "2 Raajulu", "1 Dinaruttantamulu", "2 Dinaruttantamulu", "Ezra",
+      "Nehemya", "Esteru", "Yobu", "Keertanalu", "Saamethalu",
+      "Prasangi", "Parama Geetamulu", "Yeshayya", "Yermiya", "Vilapavaakyamulu",
+      "Yehejkelu", "Daniyelu", "Hoseya", "Yovelu", "Aamosu",
+      "Obadya", "Yona", "Meekha", "Nahooshu", "Habakkuku",
+      "Zefanya", "Haggayi", "Zekarya", "Malakee", "Mattheyu",
+      "Maarku", "Luka", "Yohanu", "Aposthula Kaaryamulu", "Romiyulaku",
+      "1 Korintheelaku", "2 Korintheelaku", "Galateeyulaku", "Epheseeyulaku", "Philippeelaku",
+      "Kolosseeyulaku", "1 Thessalonikeeyulaku", "2 Thessalonikeeyulaku", "1 Timotheyiki", "2 Timotheyiki",
+      "Teethuku", "Philemonuku", "Hebreelaku", "Yaakobu", "1 Pethuru",
+      "2 Pethuru", "1 Yohanu", "2 Yohanu", "3 Yohanu", "Yooda", "Prakatanagrandhamu"
+    ];
+
+    let bibleData = [];
+    const bookSelect = document.getElementById('bookSelect');
+    const chapterSelect = document.getElementById('chapterSelect');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const contentArea = document.getElementById('contentArea');
+
+    // GitHub repository lo unna json file ni fetch chestundi
+    fetch('tenglish_bible.json')
+      .then(res => {
+        if (!res.ok) throw new Error("File not found");
+        return res.json();
+      })
+      .then(data => {
+        bibleData = data;
+        populateBooks();
+        contentArea.innerHTML = `<p class="status-msg">Grandhamu mariyu Adhyayamunu select chesukondi.</p>`;
+      })
+      .catch(err => {
+        contentArea.innerHTML = `<p class="status-msg" style="color:red;">Error: tenglish_bible.json file load kaaledu. File repository lo undo ledo chusukondi.</p>`;
+      });
+
+    function populateBooks() {
+      const availableBooks = [...new Set(bibleData.map(item => item.book_number))].sort((a, b) => a - b);
+      bookSelect.innerHTML = '<option value="">Select Book</option>';
+
+      availableBooks.forEach(num => {
+        const option = document.createElement('option');
+        option.value = num;
+        option.textContent = `${num}. ${bookNames[num - 1] || 'Book ' + num}`;
+        bookSelect.appendChild(option);
+      });
+    }
+
+    bookSelect.addEventListener('change', () => {
+      const selectedBook = parseInt(bookSelect.value);
+      chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+      if (!selectedBook) {
+        chapterSelect.disabled = true;
+        return;
+      }
+
+      const chapters = [...new Set(
+        bibleData
+          .filter(item => item.book_number === selectedBook)
+          .map(item => item.chapter_number)
+      )].sort((a, b) => a - b);
+
+      chapters.forEach(chap => {
+        const option = document.createElement('option');
+        option.value = chap;
+        option.textContent = `Chapter ${chap}`;
+        chapterSelect.appendChild(option);
+      });
+
+      chapterSelect.disabled = false;
+    });
+
+    chapterSelect.addEventListener('change', () => {
+      const book = parseInt(bookSelect.value);
+      const chapter = parseInt(chapterSelect.value);
+      if (!book || !chapter) return;
+
+      const verses = bibleData.filter(item => item.book_number === book && item.chapter_number === chapter);
+      renderVerses(verses, `${bookNames[book - 1]} - Chapter ${chapter}`);
+    });
+
+    function renderVerses(verses, titleText) {
+      if (verses.length === 0) {
+        contentArea.innerHTML = `<p class="status-msg">Vachanamulu dorakaledu.</p>`;
+        return;
+      }
+
+      let html = `<h2 style="margin-bottom: 20px; color: var(--primary-color);">${titleText}</h2>`;
+      verses.forEach((v, index) => {
+        html += `
+          <div class="verse-item">
+            <span class="verse-number">${index + 1}</span>
+            <span>${v.text}</span>
+          </div>
+        `;
+      });
+      contentArea.innerHTML = html;
+    }
+
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+
+    function performSearch() {
+      const query = searchInput.value.trim().toLowerCase();
+      if (!query) return;
+
+      const results = bibleData.filter(item => item.text && item.text.toLowerCase().includes(query));
+      if (results.length === 0) {
+        contentArea.innerHTML = `<p class="status-msg">"${query}" vachanamulu dorakaledu.</p>`;
+        return;
+      }
+
+      let html = `<h2 style="margin-bottom: 15px;">Search: "${query}" (${results.length} dorikaayi)</h2>`;
+      results.slice(0, 100).forEach(v => {
+        const bName = bookNames[v.book_number - 1] || `Book ${v.book_number}`;
+        html += `
+          <div class="verse-item" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+            <div style="font-size: 13px; color: #888; font-weight: bold;">${bName} ${v.chapter_number}</div>
+            <div>${v.text}</div>
+          </div>
+        `;
+      });
+      contentArea.innerHTML = html;
+    }
+  </script>
+</body>
+</html>
