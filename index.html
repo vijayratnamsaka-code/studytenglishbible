@@ -12,44 +12,155 @@
       --card-bg: #ffffff;
       --text-color: #333333;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-    body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
-    header { background-color: var(--primary-color); color: white; padding: 1.2rem; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-    .control-panel {
-      background: var(--card-bg); padding: 1.2rem; border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
-      display: flex; flex-wrap: wrap; gap: 15px; align-items: center; justify-content: space-between;
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    .selectors { display: flex; gap: 10px; flex-wrap: wrap; }
-    select, input, button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; outline: none; }
-    select:focus, input:focus { border-color: var(--accent-color); }
-    button { background-color: var(--accent-color); color: white; border: none; cursor: pointer; font-weight: bold; }
-    button:hover { background-color: #2980b9; }
-    .search-box { display: flex; gap: 8px; width: 100%; max-width: 320px; }
-    .search-box input { flex: 1; }
-    .verse-container { background: var(--card-bg); padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); min-height: 400px; }
-    .verse-item { margin-bottom: 12px; font-size: 16px; }
-    .verse-number { font-weight: bold; color: var(--accent-color); margin-right: 8px; }
-    .status-msg { text-align: center; color: #777; font-style: italic; padding: 30px; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 1rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .control-panel {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .selectors {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    select, input, button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent-color);
+    }
+
+    button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 350px;
+    }
+
+    .search-box input {
+      flex: 1;
+    }
+
+    .file-input-wrapper {
+      width: 100%;
+      background: #eef2f7;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .verse-container {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      min-height: 400px;
+    }
+
+    .verse-item {
+      margin-bottom: 15px;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .verse-number {
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-right: 8px;
+      font-size: 14px;
+    }
+
+    .status-msg {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Telugu Bible Reader</h1>
-    <p>Tenglish Translation</p>
+    <h1>Telugu Bible Reader (Tenglish)</h1>
+    <p>Parishuddha Grandhamu</p>
   </header>
 
   <div class="container">
     <div class="control-panel">
+      <div class="file-input-wrapper">
+        <span>Json file load kaakapothe ikkada select cheyandi:</span>
+        <input type="file" id="jsonFile" accept=".json" />
+      </div>
+
       <div class="selectors">
-        <select id="bookSelect"><option value="">Select Book</option></select>
-        <select id="chapterSelect" disabled><option value="">Select Chapter</option></select>
+        <select id="bookSelect">
+          <option value="">Select Book</option>
+        </select>
+
+        <select id="chapterSelect" disabled>
+          <option value="">Select Chapter</option>
+        </select>
       </div>
 
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search verse..." />
+        <input type="text" id="searchInput" placeholder="Search verse / text..." />
         <button id="searchBtn">Search</button>
       </div>
     </div>
@@ -60,6 +171,7 @@
   </div>
 
   <script>
+    // 66 Bible Pusthakala perlu
     const bookNames = [
       "Aadhikaandamu", "Nirgamakaandamu", "Leviyakaandamu", "Sankhyaakaandamu", "Dviteeyopadeshamu",
       "Yohoshuva", "Nyaayaadhipatulu", "Rutu", "1 Shamuyelu", "2 Shamuyelu",
@@ -77,28 +189,50 @@
     ];
 
     let bibleData = [];
+
     const bookSelect = document.getElementById('bookSelect');
     const chapterSelect = document.getElementById('chapterSelect');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const contentArea = document.getElementById('contentArea');
+    const jsonFileInput = document.getElementById('jsonFile');
 
-    // GitHub repository lo unna json file ni fetch chestundi
+    // Default ga fetch cheyadaniki prayatnam (Live Server or Hosting lo)
     fetch('tenglish_bible.json')
       .then(res => {
-        if (!res.ok) throw new Error("File not found");
+        if (!res.ok) throw new Error("Local file fetch blocked");
         return res.json();
       })
-      .then(data => {
-        bibleData = data;
-        populateBooks();
-        contentArea.innerHTML = `<p class="status-msg">Grandhamu mariyu Adhyayamunu select chesukondi.</p>`;
-      })
-      .catch(err => {
-        contentArea.innerHTML = `<p class="status-msg" style="color:red;">Error: tenglish_bible.json file load kaaledu. File repository lo undo ledo chusukondi.</p>`;
+      .then(data => initBible(data))
+      .catch(() => {
+        contentArea.innerHTML = `<p class="status-msg">Auto-load kaledu. Paina unna <b>"Choose File"</b> button tho mee <code>tenglish_bible.json</code> file ni select cheyandi.</p>`;
       });
 
+    // File input dwaara JSON load cheyadam
+    jsonFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          initBible(data);
+        } catch (err) {
+          alert("Invalid JSON file!");
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function initBible(data) {
+      bibleData = data;
+      populateBooks();
+      contentArea.innerHTML = `<p class="status-msg">Grandhamu mariyu Adhyayamunu select chesukondi.</p>`;
+    }
+
     function populateBooks() {
+      // Unna book numbers theesukondi
       const availableBooks = [...new Set(bibleData.map(item => item.book_number))].sort((a, b) => a - b);
       bookSelect.innerHTML = '<option value="">Select Book</option>';
 
@@ -113,11 +247,13 @@
     bookSelect.addEventListener('change', () => {
       const selectedBook = parseInt(bookSelect.value);
       chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+      
       if (!selectedBook) {
         chapterSelect.disabled = true;
         return;
       }
 
+      // Selected book lo unna chapters
       const chapters = [...new Set(
         bibleData
           .filter(item => item.book_number === selectedBook)
@@ -137,6 +273,7 @@
     chapterSelect.addEventListener('change', () => {
       const book = parseInt(bookSelect.value);
       const chapter = parseInt(chapterSelect.value);
+
       if (!book || !chapter) return;
 
       const verses = bibleData.filter(item => item.book_number === book && item.chapter_number === chapter);
@@ -151,9 +288,10 @@
 
       let html = `<h2 style="margin-bottom: 20px; color: var(--primary-color);">${titleText}</h2>`;
       verses.forEach((v, index) => {
+        const verseNum = index + 1;
         html += `
           <div class="verse-item">
-            <span class="verse-number">${index + 1}</span>
+            <span class="verse-number">${verseNum}</span>
             <span>${v.text}</span>
           </div>
         `;
@@ -161,29 +299,38 @@
       contentArea.innerHTML = html;
     }
 
+    // Search functionality
     searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') performSearch(); });
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') performSearch();
+    });
 
     function performSearch() {
       const query = searchInput.value.trim().toLowerCase();
       if (!query) return;
 
       const results = bibleData.filter(item => item.text && item.text.toLowerCase().includes(query));
+
       if (results.length === 0) {
-        contentArea.innerHTML = `<p class="status-msg">"${query}" vachanamulu dorakaledu.</p>`;
+        contentArea.innerHTML = `<p class="status-msg">"${query}" ane padam tho vachanamulu emi dorakaledu.</p>`;
         return;
       }
 
-      let html = `<h2 style="margin-bottom: 15px;">Search: "${query}" (${results.length} dorikaayi)</h2>`;
+      let html = `<h2 style="margin-bottom: 20px;">Search Results: "${query}" (${results.length} dorikaayi)</h2>`;
       results.slice(0, 100).forEach(v => {
         const bName = bookNames[v.book_number - 1] || `Book ${v.book_number}`;
         html += `
-          <div class="verse-item" style="border-bottom: 1px solid #eee; padding-bottom: 8px;">
+          <div class="verse-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px;">
             <div style="font-size: 13px; color: #888; font-weight: bold;">${bName} ${v.chapter_number}</div>
             <div>${v.text}</div>
           </div>
         `;
       });
+
+      if (results.length > 100) {
+        html += `<p class="status-msg">Modati 100 vachanamulu chupistunnamu...</p>`;
+      }
+
       contentArea.innerHTML = html;
     }
   </script>
